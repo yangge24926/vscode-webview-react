@@ -102,8 +102,6 @@ export class HelloWorldPanel {
       "utf8"
     );
 
-    console.log(htmlContent);
-
     return `
       <base href="${baseUri}/">
       ${htmlContent}

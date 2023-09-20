@@ -16,7 +16,6 @@ function App() {
   }
 
   useEffect(() => {
-    console.log(222);
     // startAddEventListenerMessage();
     window.addEventListener('message', (event) => {
       const { type, content } = event.data;

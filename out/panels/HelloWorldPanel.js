@@ -86,7 +86,6 @@ class HelloWorldPanel {
         const baseUri = (0, getUri_1.getUri)(webview, extensionUri, ["webview-ui", "build"]);
         // 读取 JavaScript 文件内容
         const htmlContent = fs.readFileSync(path.join(context.extensionPath, "webview-ui/build/index.html"), "utf8");
-        console.log(htmlContent);
         return `
       <base href="${baseUri}/">
       ${htmlContent}
