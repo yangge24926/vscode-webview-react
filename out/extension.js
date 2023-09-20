@@ -6,7 +6,7 @@ const HelloWorldPanel_1 = require("./panels/HelloWorldPanel");
 function activate(context) {
     // Create the show hello world command
     const showHelloWorldCommand = vscode_1.commands.registerCommand("hello-world.showHelloWorld", () => {
-        HelloWorldPanel_1.HelloWorldPanel.render(context.extensionUri);
+        HelloWorldPanel_1.HelloWorldPanel.render(context);
     });
     // Add command to the extension context
     context.subscriptions.push(showHelloWorldCommand);

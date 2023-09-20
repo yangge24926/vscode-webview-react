@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HelloWorldPanel = void 0;
+const fs = require("fs");
+const path = require("path");
 const vscode_1 = require("vscode");
 const getUri_1 = require("../utilities/getUri");
 /**
@@ -14,30 +16,19 @@ const getUri_1 = require("../utilities/getUri");
  * - Setting message listeners so data can be passed between the webview and extension
  */
 class HelloWorldPanel {
-    /**
-     * The HelloWorldPanel class private constructor (called only from the render method).
-     *
-     * @param panel A reference to the webview panel
-     * @param extensionUri The URI of the directory containing the extension
-     */
-    constructor(panel, extensionUri) {
+    constructor(panel, context) {
         this._disposables = [];
         this._panel = panel;
         // Set an event listener to listen for when the panel is disposed (i.e. when the user closes
         // the panel or when the panel is closed programmatically)
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
         // Set the HTML content for the webview panel
-        this._panel.webview.html = this._getWebviewContent(this._panel.webview, extensionUri);
+        this._panel.webview.html = this._getWebviewContent(this._panel.webview, context);
         // Set an event listener to listen for messages passed from the webview context
         this._setWebviewMessageListener(this._panel.webview);
     }
-    /**
-     * Renders the current webview panel if it exists otherwise a new webview panel
-     * will be created and displayed.
-     *
-     * @param extensionUri The URI of the directory containing the extension.
-     */
-    static render(extensionUri) {
+    static render(context) {
+        const { extensionUri } = context;
         if (HelloWorldPanel.currentPanel) {
             // If the webview panel already exists reveal it
             HelloWorldPanel.currentPanel._panel.reveal(vscode_1.ViewColumn.One);
@@ -56,9 +47,12 @@ class HelloWorldPanel {
                 // Enable JavaScript in the webview
                 enableScripts: true,
                 // Restrict the webview to only load resources from the `out` and `webview-ui/build` directories
-                localResourceRoots: [vscode_1.Uri.joinPath(extensionUri, "out"), vscode_1.Uri.joinPath(extensionUri, "webview-ui/build")],
+                localResourceRoots: [
+                    vscode_1.Uri.joinPath(extensionUri, "out"),
+                    vscode_1.Uri.joinPath(extensionUri, "webview-ui/build"),
+                ],
             });
-            HelloWorldPanel.currentPanel = new HelloWorldPanel(panel, extensionUri);
+            HelloWorldPanel.currentPanel = new HelloWorldPanel(panel, context);
         }
     }
     /**
@@ -87,83 +81,15 @@ class HelloWorldPanel {
      * @returns A template string literal containing the HTML that should be
      * rendered within the webview panel
      */
-    _getWebviewContent(webview, extensionUri) {
-        // The CSS file from the React build output
-        const stylesUri = (0, getUri_1.getUri)(webview, extensionUri, [
-            "webview-ui",
-            "build",
-            "static",
-            "css",
-            "main.css",
-        ]);
-        // The JS file from the React build output
-        const scriptUri = (0, getUri_1.getUri)(webview, extensionUri, [
-            "webview-ui",
-            "build",
-            "static",
-            "js",
-            "main.js",
-        ]);
-        const imgUri = (0, getUri_1.getUri)(webview, extensionUri, [
-            "webview-ui",
-            "build",
-        ]);
+    _getWebviewContent(webview, context) {
+        const { extensionUri } = context;
+        const baseUri = (0, getUri_1.getUri)(webview, extensionUri, ["webview-ui", "build"]);
+        // 读取 JavaScript 文件内容
+        const htmlContent = fs.readFileSync(path.join(context.extensionPath, "webview-ui/build/index.html"), "utf8");
+        console.log(htmlContent);
         return `
-    <!DOCTYPE html>
-<html lang="en">
-  <head>
-  <base href="aaa/">
-    <meta charset="utf-8" />
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta name="description" content="Web site created using create-react-app" />
-    <link rel="apple-touch-icon" href="/logo192.png" />
-    <link rel="manifest" href="/manifest.json" />
-    <title>Hello World</title>
-    <script defer="defer" src="/static/js/main.js"></script>
-    <link href="/static/css/main.css" rel="stylesheet" />
-    <meta 
-            http-equiv="Content-Security-Policy" 
-            content="
-              default-src *; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'; img-src * data: 'unsafe-inline'; connect-src * 'unsafe-inline'; frame-src *;
-            "
-          >
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-  </body>
-</html>
-
-    `;
-        // Tip: Install the es6-string-html VS Code extension to enable code highlighting below
-        return /*html*/ `
-      <!DOCTYPE html>
-      <html lang="en">
-        <head>
-          <base href="${imgUri}/">
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
-          <meta name="theme-color" content="#000000">
-          <meta 
-            http-equiv="Content-Security-Policy" 
-            content="
-              default-src *; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'; img-src * data: 'unsafe-inline'; connect-src * 'unsafe-inline'; frame-src *;
-            "
-          >
-          <link rel="stylesheet" type="text/css" href="${stylesUri}">
-          <title>Hello World</title>
-        </head>
-        <body>
-          <noscript>You need to enable JavaScript to run this app.</noscript>
-          <div id="root"></div>
-          <script>
-            // window._imgUri = '${imgUri}/'
-          </script>
-          <script src="${scriptUri}"></script>
-        </body>
-      </html>
+      <base href="${baseUri}/">
+      ${htmlContent}
     `;
     }
     /**
@@ -182,10 +108,7 @@ class HelloWorldPanel {
                     vscode_1.window.showInformationMessage(text);
                     return;
                 case "main-loader":
-                    console.log(11111);
-                    console.log(vscode_1.workspace.getConfiguration().get('editor.background'));
-                    console.log(vscode_1.window.activeColorTheme);
-                    webview.postMessage({ type: 'language', content: vscode_1.env.language });
+                    webview.postMessage({ type: "language", content: vscode_1.env.language });
                     return;
             }
         }, undefined, this._disposables);
