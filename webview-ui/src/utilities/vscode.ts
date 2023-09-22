@@ -18,7 +18,101 @@ class VSCodeAPIWrapper {
     // Check if the acquireVsCodeApi function exists in the current development
     // context (i.e. VS Code development window or web browser)
     if (typeof acquireVsCodeApi === "function") {
-      this.vsCodeApi = acquireVsCodeApi();
+      const vscode = acquireVsCodeApi();
+      this.vsCodeApi = vscode;
+
+      const getter = (t: { owner: any; }, k: any) => {
+        return (...rest: any) => {
+          const id = `${t.owner}-${k}-${new Date().getTime()}`;
+          console.log('get arguments', rest);
+          console.log('generate id', id);
+          vscode.postMessage({
+            command: t.owner,
+            data: {
+              type: k,
+              id: id,
+              args: rest,
+            },
+          });
+          return new Promise((resolve) => {
+            window.addEventListener('message', (event) => {
+              const message = event.data;
+              if (message.command === id) {
+                console.log('response info', id, message.data);
+                resolve(message.data);
+              }
+            });
+          });
+        };
+      };
+      (window as any).fs = new Proxy(
+        {
+          owner: 'fs',
+        },
+        {
+          get: getter,
+        }
+      );
+      // window.path = new Proxy(
+      //   {
+      //     owner: 'path',
+      //   },
+      //   {
+      //     get: getter,
+      //   }
+      // );
+      (window as any).electron = {
+        ipcRenderer: {
+          send(...rest: any[]) {
+            console.log('send', rest);
+            vscode.postMessage({
+              command: 'ipcRenderer',
+              data: {
+                type: 'send',
+                args: rest,
+              },
+            });
+          },
+          once(...rest: any[]) {
+            console.log('once', rest);
+            const [name, callback] = rest;
+            window.addEventListener('message', (event) => {
+              const message = event.data;
+              if (message.command === name) {
+                callback();
+              }
+            });
+          },
+          on(...rest: any[]) {
+            console.log('on', rest);
+            const [name, callback] = rest;
+            window.addEventListener('message', (event) => {
+              const message = event.data;
+              if (message.command === name) {
+                callback();
+              }
+            });
+          },
+        },
+      };
+      
+      (window as any).os = new Proxy(
+        {
+          owner: 'os',
+        },
+        {
+          get: getter,
+        }
+      );
+      /* eslint-disable camelcase */
+      (window as any).child_process = new Proxy(
+        {
+          owner: 'child_process',
+        },
+        {
+          get: getter,
+        }
+      );
     }
   }
 
