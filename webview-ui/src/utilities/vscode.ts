@@ -11,8 +11,6 @@ import type { WebviewApi } from "vscode-webview";
  */
 class VSCodeAPIWrapper {
   private readonly vsCodeApi: WebviewApi<unknown> | undefined;
-  private _theme: string | undefined;
-  private _language: string | undefined;
 
   constructor() {
     // Check if the acquireVsCodeApi function exists in the current development
@@ -53,14 +51,6 @@ class VSCodeAPIWrapper {
           get: getter,
         }
       );
-      // window.path = new Proxy(
-      //   {
-      //     owner: 'path',
-      //   },
-      //   {
-      //     get: getter,
-      //   }
-      // );
       (window as any).electron = {
         ipcRenderer: {
           send(...rest: any[]) {
@@ -168,23 +158,6 @@ class VSCodeAPIWrapper {
       return newState;
     }
   }
-
-  get theme() {
-    return this._theme;
-  }
-
-  set theme(v) {
-    this._theme = v;
-  }
-
-  get language() {
-    return this._language;
-  }
-
-  set language(v) {
-    this._language = v;
-  }
-
 }
 const vscode = new VSCodeAPIWrapper();
 export default vscode;

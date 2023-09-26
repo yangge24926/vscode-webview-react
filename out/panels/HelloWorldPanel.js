@@ -50,7 +50,6 @@ class HelloWorldPanel {
                 localResourceRoots: [
                     vscode_1.Uri.joinPath(extensionUri, "out"),
                     vscode_1.Uri.joinPath(extensionUri, "webview-ui/build"),
-                    vscode_1.Uri.joinPath(extensionUri, "webview-fsm-ref/build"),
                 ],
             });
             HelloWorldPanel.currentPanel = new HelloWorldPanel(panel, context);
@@ -84,12 +83,9 @@ class HelloWorldPanel {
      */
     _getWebviewContent(webview, context) {
         const { extensionUri } = context;
-        // const baseUri = getUri(webview, extensionUri, ["webview-ui", "build"]);
-        const baseUri = (0, getUri_1.getUri)(webview, extensionUri, ["webview-fsm-ref", "build"]);
+        const baseUri = (0, getUri_1.getUri)(webview, extensionUri, ["webview-ui", "build"]);
         // 读取 JavaScript 文件内容
-        const htmlContent = fs.readFileSync(path.join(context.extensionPath, "webview-fsm-ref/build/index.html"), 
-        // path.join(context.extensionPath, "webview-ui/build/index.html"),
-        "utf8");
+        const htmlContent = fs.readFileSync(path.join(context.extensionPath, "webview-ui/build/index.html"), "utf8");
         return `
       <base href="${baseUri}/">
       ${htmlContent}
@@ -107,9 +103,6 @@ class HelloWorldPanel {
             const command = message.command;
             const text = message.text;
             switch (command) {
-                case "hello":
-                    vscode_1.window.showInformationMessage(text);
-                    return;
                 case "main-loader":
                     webview.postMessage({ type: "language", content: vscode_1.env.language });
                     return;

@@ -55,7 +55,6 @@ export class HelloWorldPanel {
           localResourceRoots: [
             Uri.joinPath(extensionUri, "out"),
             Uri.joinPath(extensionUri, "webview-ui/build"),
-            Uri.joinPath(extensionUri, "webview-fsm-ref/build"),
           ],
         }
       );
@@ -95,13 +94,11 @@ export class HelloWorldPanel {
    */
   private _getWebviewContent(webview: Webview, context: ExtensionContext) {
     const { extensionUri } = context;
-    // const baseUri = getUri(webview, extensionUri, ["webview-ui", "build"]);
-    const baseUri = getUri(webview, extensionUri, ["webview-fsm-ref", "build"]);
+    const baseUri = getUri(webview, extensionUri, ["webview-ui", "build"]);
 
     // 读取 JavaScript 文件内容
     const htmlContent = fs.readFileSync(
-      path.join(context.extensionPath, "webview-fsm-ref/build/index.html"),
-      // path.join(context.extensionPath, "webview-ui/build/index.html"),
+      path.join(context.extensionPath, "webview-ui/build/index.html"),
       "utf8"
     );
 
@@ -125,9 +122,6 @@ export class HelloWorldPanel {
         const text = message.text;
 
         switch (command) {
-          case "hello":
-            window.showInformationMessage(text);
-            return;
           case "main-loader":
             webview.postMessage({ type: "language", content: env.language });
             return;

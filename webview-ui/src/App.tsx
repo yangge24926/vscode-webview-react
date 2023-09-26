@@ -1,34 +1,23 @@
-import vscode from "./utilities/vscode";
-// import { startAddEventListenerMessage } from './utilities/listenerMessage';
-import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
-import helloWorldPng from "./asserts/hello-world.png";
-import "./App.css";
 import { useEffect, useState } from "react";
+import { installLanguage, _L } from './localization/lang'
+import vscode from "./utilities/vscode";
+import "./App.css";
+import { formatString } from "./utils";
 
 function App() {
-  const [theme, setTheme] = useState('')
   const [language, setLanguage] = useState('')
-  function handleHowdyClick() {
-    vscode.postMessage({
-      command: "hello",
-      text: "Hey there partner! 🤠",
-    });
-  }
+
+  setTimeout(() => {
+    installLanguage('zh-CN', setLanguage)
+  }, 1000);
 
   useEffect(() => {
-    // startAddEventListenerMessage();
     window.addEventListener('message', (event) => {
       const { type, content } = event.data;
-      console.log(event)
       switch (type) {
-        case 'theme':
-          setTheme(content);
-          break;
-      
         case 'language':
-          setLanguage(content);
+          installLanguage(content, setLanguage)
           break;
-        
       }
     });
     vscode.postMessage({
@@ -36,22 +25,17 @@ function App() {
     })
   }, [])
 
-  return (
-    <main>
-      <h1>Hello World!</h1>
-      <h2>当前主题：{theme}</h2>
-      <h2>当前语言：{language}</h2>
-      <VSCodeButton onClick={handleHowdyClick}>Howdy!</VSCodeButton>
-      <div style={{
-        width: '100px',
-        height: '100px',
-        backgroundImage: `url(${(window as any)._imgUri}${helloWorldPng})`,
-        backgroundSize: '100%',
-      }}></div>
-      <img src={`${(window as any)._imgUri}${helloWorldPng}`} alt=""/>
-      <img src={`${(window as any)._imgUri}images/logo512.png`} alt=""/>
-    </main>
-  );
+  let content = null;
+  if (language) {
+    content = (
+      <main>
+        <h1>{_L('Hello World!')}</h1>
+        <h2>{formatString(_L('Current Language: %s'), language)}</h2>
+      </main>
+    )
+  }
+
+  return content;
 }
 
 export default App;
