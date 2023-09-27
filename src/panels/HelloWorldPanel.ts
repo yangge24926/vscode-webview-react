@@ -1,8 +1,16 @@
 import * as fs from "fs";
 import * as path from "path";
-import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, env, ExtensionContext } from "vscode";
+import {
+  Disposable,
+  Webview,
+  WebviewPanel,
+  window,
+  Uri,
+  ViewColumn,
+  env,
+  ExtensionContext,
+} from "vscode";
 import { getUri } from "../utilities/getUri";
-
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -27,7 +35,10 @@ export class HelloWorldPanel {
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
     // Set the HTML content for the webview panel
-    this._panel.webview.html = this._getWebviewContent(this._panel.webview, context);
+    this._panel.webview.html = this._getWebviewContent(
+      this._panel.webview,
+      context
+    );
 
     // Set an event listener to listen for messages passed from the webview context
     this._setWebviewMessageListener(this._panel.webview);

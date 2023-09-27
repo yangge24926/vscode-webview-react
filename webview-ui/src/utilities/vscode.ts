@@ -1,4 +1,4 @@
-import type { WebviewApi } from "vscode-webview";
+import type { WebviewApi } from 'vscode-webview';
 
 /**
  * A utility wrapper around the acquireVsCodeApi() function, which enables
@@ -15,11 +15,11 @@ class VSCodeAPIWrapper {
   constructor() {
     // Check if the acquireVsCodeApi function exists in the current development
     // context (i.e. VS Code development window or web browser)
-    if (typeof acquireVsCodeApi === "function") {
+    if (typeof acquireVsCodeApi === 'function') {
       const vscode = acquireVsCodeApi();
       this.vsCodeApi = vscode;
 
-      const getter = (t: { owner: any; }, k: any) => {
+      const getter = (t: { owner: any }, k: any) => {
         return (...rest: any) => {
           const id = `${t.owner}-${k}-${new Date().getTime()}`;
           console.log('get arguments', rest);
@@ -85,7 +85,7 @@ class VSCodeAPIWrapper {
           },
         },
       };
-      
+
       (window as any).os = new Proxy(
         {
           owner: 'os',
@@ -134,7 +134,7 @@ class VSCodeAPIWrapper {
     if (this.vsCodeApi) {
       return this.vsCodeApi.getState();
     } else {
-      const state = localStorage.getItem("vscodeState");
+      const state = localStorage.getItem('vscodeState');
       return state ? JSON.parse(state) : undefined;
     }
   }
@@ -154,7 +154,7 @@ class VSCodeAPIWrapper {
     if (this.vsCodeApi) {
       return this.vsCodeApi.setState(newState);
     } else {
-      localStorage.setItem("vscodeState", JSON.stringify(newState));
+      localStorage.setItem('vscodeState', JSON.stringify(newState));
       return newState;
     }
   }
