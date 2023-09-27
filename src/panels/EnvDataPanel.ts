@@ -23,8 +23,8 @@ import { getUri } from "../utilities/getUri";
  * - Setting message listeners so data can be passed between the webview and extension
  */
 
-export class HelloWorldPanel {
-  public static currentPanel: HelloWorldPanel | undefined;
+export class EnvDataPanel {
+  public static currentPanel: EnvDataPanel | undefined;
   private readonly _panel: WebviewPanel;
   private _disposables: Disposable[] = [];
 
@@ -46,16 +46,16 @@ export class HelloWorldPanel {
 
   public static render(context: ExtensionContext) {
     const { extensionUri } = context;
-    if (HelloWorldPanel.currentPanel) {
+    if (EnvDataPanel.currentPanel) {
       // If the webview panel already exists reveal it
-      HelloWorldPanel.currentPanel._panel.reveal(ViewColumn.One);
+      EnvDataPanel.currentPanel._panel.reveal(ViewColumn.One);
     } else {
       // If a webview panel does not already exist create and show a new one
       const panel = window.createWebviewPanel(
         // Panel view type
-        "showHelloWorld",
+        "envDataWebview",
         // Panel title
-        "Hello World",
+        "Env Data",
         // The editor column the panel should be displayed in
         ViewColumn.One,
         // Extra panel configurations
@@ -70,7 +70,7 @@ export class HelloWorldPanel {
         }
       );
 
-      HelloWorldPanel.currentPanel = new HelloWorldPanel(panel, context);
+      EnvDataPanel.currentPanel = new EnvDataPanel(panel, context);
     }
   }
 
@@ -78,7 +78,7 @@ export class HelloWorldPanel {
    * Cleans up and disposes of webview resources when the webview panel is closed.
    */
   public dispose() {
-    HelloWorldPanel.currentPanel = undefined;
+    EnvDataPanel.currentPanel = undefined;
 
     // Dispose of the current webview panel
     this._panel.dispose();

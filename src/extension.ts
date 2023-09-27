@@ -1,12 +1,6 @@
 import { commands, ExtensionContext } from "vscode";
-import { HelloWorldPanel } from "./panels/HelloWorldPanel";
+import { EnvDataPanel } from "./panels/EnvDataPanel";
 
 export function activate(context: ExtensionContext) {
-  // Create the show hello world command
-  const showHelloWorldCommand = commands.registerCommand("hello-world.showHelloWorld", () => {
-    HelloWorldPanel.render(context);
-  });
-
-  // Add command to the extension context
-  context.subscriptions.push(showHelloWorldCommand);
+  EnvDataPanel.render(context);
 }

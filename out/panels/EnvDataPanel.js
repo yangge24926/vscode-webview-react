@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.HelloWorldPanel = void 0;
+exports.EnvDataPanel = void 0;
 const fs = require("fs");
 const path = require("path");
 const vscode_1 = require("vscode");
@@ -15,7 +15,7 @@ const getUri_1 = require("../utilities/getUri");
  * - Setting the HTML (and by proxy CSS/JavaScript) content of the webview panel
  * - Setting message listeners so data can be passed between the webview and extension
  */
-class HelloWorldPanel {
+class EnvDataPanel {
     constructor(panel, context) {
         this._disposables = [];
         this._panel = panel;
@@ -29,17 +29,17 @@ class HelloWorldPanel {
     }
     static render(context) {
         const { extensionUri } = context;
-        if (HelloWorldPanel.currentPanel) {
+        if (EnvDataPanel.currentPanel) {
             // If the webview panel already exists reveal it
-            HelloWorldPanel.currentPanel._panel.reveal(vscode_1.ViewColumn.One);
+            EnvDataPanel.currentPanel._panel.reveal(vscode_1.ViewColumn.One);
         }
         else {
             // If a webview panel does not already exist create and show a new one
             const panel = vscode_1.window.createWebviewPanel(
             // Panel view type
-            "showHelloWorld", 
+            "envDataWebview", 
             // Panel title
-            "Hello World", 
+            "Env Data", 
             // The editor column the panel should be displayed in
             vscode_1.ViewColumn.One, 
             // Extra panel configurations
@@ -52,14 +52,14 @@ class HelloWorldPanel {
                     vscode_1.Uri.joinPath(extensionUri, "webview-ui/build"),
                 ],
             });
-            HelloWorldPanel.currentPanel = new HelloWorldPanel(panel, context);
+            EnvDataPanel.currentPanel = new EnvDataPanel(panel, context);
         }
     }
     /**
      * Cleans up and disposes of webview resources when the webview panel is closed.
      */
     dispose() {
-        HelloWorldPanel.currentPanel = undefined;
+        EnvDataPanel.currentPanel = undefined;
         // Dispose of the current webview panel
         this._panel.dispose();
         // Dispose of all disposables (i.e. commands) for the current webview panel
@@ -110,5 +110,5 @@ class HelloWorldPanel {
         }, undefined, this._disposables);
     }
 }
-exports.HelloWorldPanel = HelloWorldPanel;
-//# sourceMappingURL=HelloWorldPanel.js.map
+exports.EnvDataPanel = EnvDataPanel;
+//# sourceMappingURL=EnvDataPanel.js.map
